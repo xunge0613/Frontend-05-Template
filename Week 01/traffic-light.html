@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>红绿灯</title>
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #traffic-light {
+        width: 60px;
+        background: black;
+      }
+      #traffic-light div {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin: 5px;
+        filter: grayscale(0.5);
+      }
+      #traffic-light .active {
+        filter: grayscale(0);
+      }
+      #red {
+        background: red;
+      }
+      #yellow {
+        background: yellow;
+      }
+      #green {
+        background: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="traffic-light">
+      <div id="red"></div>
+      <div id="yellow"></div>
+      <div id="green"></div>
+    </div>
+    <script>
+      const nextMap = {
+        red: "green",
+        yellow: "red",
+        green: "yellow",
+      };
+      async function lightOn(id) {
+        console.log(id);
+        let wait = 5000;
+        switch (id) {
+          case "red":
+            wait = 5000;
+            break;
+          case "yellow":
+            wait = 3000;
+            break;
+          case "green":
+            wait = 10000;
+            break;
+          default:
+            break;
+        }
+        return new Promise((resolve) => {
+          document.getElementById(id).classList = ["active"];
+          setTimeout(async () => {
+            ["red", "green", "yellow"].forEach((item) => {
+              lightOff(item);
+            });
+
+            // 循环亮起下一个灯
+            await lightOn(nextMap[id]);
+            resolve(true);
+          }, wait);
+        });
+      }
+
+      // 关灯
+      function lightOff(id) {
+        document.getElementById(id).classList = [];
+      }
+
+      // 初始化灯
+      async function init() {
+        await lightOn("green");
+      }
+
+      init();
+    </script>
+  </body>
+</html>
