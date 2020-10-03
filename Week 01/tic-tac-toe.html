@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <style>
+      .cell {
+        display: inline-block;
+        border: 1px solid #666;
+        vertical-align: middle;
+        font-size: 50px;
+        line-height: 100px;
+        width: 100px;
+        height: 100px;
+        text-align: center;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <div id="board"></div>
+    </div>
+    <script>
+      let current = 1; // 当前 X 下
+      let isEnd = false; // 记录当前是否已结束
+
+      const boardData = [0, 0, 0, 0, 0, 0, 0, 0, 0]; // 使用一维数组减少内存占用
+      show();
+
+      // 判断胜负
+      // 借鉴了 react 教程上的逻辑 https://reactjs.org/tutorial/tutorial.html#declaring-a-winner
+      function calculateWinner(checkData, checkCurrent) {
+        const lines = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8],
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8],
+          [0, 4, 8],
+          [2, 4, 6],
+        ];
+        for (let i = 0; i < lines.length; i++) {
+          const [a, b, c] = lines[i];
+          if (
+            checkData[a] &&
+            checkData[a] === checkData[b] &&
+            checkData[a] === checkData[c]
+          ) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      // 克隆棋盘，实现预下子功能
+      function cloneData(checkData) {
+        // 简单粗暴深拷贝
+        // return JSON.parse(JSON.stringify(checkData));
+        // Object.create 浅拷贝，继承原型
+        return Object.create(checkData);
+      }
+
+      // 初步 AI，判断是否要赢了
+      // 方式：循环遍历所有空节点，检测当前是否存在可以赢的棋子
+      function willWin(checkData, checkCurrent) {
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            // 遍历所有空节点
+            if (!checkData[i * 3 + j]) {
+              // 深拷贝当前棋盘数据
+              const tmp = cloneData(checkData);
+              tmp[i * 3 + j] = checkCurrent;
+              if (calculateWinner(tmp, checkCurrent)) {
+                // console.log("will win");
+                // 返回获胜点
+                return { i, j };
+              }
+            }
+          }
+        }
+        return null;
+      }
+
+      // 下子，x坐标 y 坐标
+      function move(i, j) {
+        console.log(boardData);
+
+        if (boardData[i * 3 + j] || isEnd) {
+          // 已有棋子
+          return;
+        }
+
+        // 下子
+        boardData[i * 3 + j] = current;
+
+        // 绘制
+        show();
+        // 判断胜负
+        if (calculateWinner(boardData, current)) {
+          alert(`winner is ${current === 1 ? "❌" : "⭕️"}`);
+          isEnd = true;
+          return;
+        }
+
+        computerMove();
+      }
+
+      function computerMove() {
+        // 换人，小技巧；使用 3 来交换，类似可以用除法
+        const computerCurrent = 3 - current;
+        const result = bestChoice(boardData, computerCurrent);
+        if (!result.point) {
+          alert("平局！");
+          return; // 无子可下
+        }
+        boardData[result.point.i * 3 + result.point.j] = computerCurrent;
+        // 绘制
+        show();
+
+        // 判断胜负
+        if (calculateWinner(boardData, computerCurrent)) {
+          alert(`winner is ${computerCurrent === 1 ? "❌" : "⭕️"}`);
+          isEnd = true;
+          return;
+        }
+      }
+
+      function show() {
+        const boardDom = document.getElementById("board");
+        if (!boardDom) {
+          return;
+        }
+        // 先清空棋盘
+        boardDom.innerHTML = "";
+
+        // 绘制棋盘
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+            switch (boardData[i * 3 + j]) {
+              case 1:
+                cell.innerText = "❌";
+                break;
+              case 2:
+                cell.innerText = "⭕️";
+                break;
+              default:
+                break;
+            }
+            // 注意：此处用了 let，创建了一个词法作用域，会保留每次循环的 i 和 j
+            // var 需要手动添加 iife（立即调用函数）
+            cell.addEventListener("click", () => {
+              move(i, j);
+            });
+            boardDom.appendChild(cell);
+          }
+          boardDom.appendChild(document.createElement("br"));
+        }
+      }
+
+      /**
+       * 选择当前最好的子
+       * @returns result
+       * @returns point
+       **/
+      function bestChoice(checkData, checkCurrent) {
+        // 特例：willWin
+        const willWinPoint = willWin(checkData, checkCurrent);
+        if (willWinPoint) {
+          return {
+            point: willWinPoint,
+            result: 1,
+          };
+        }
+        let result = -2; // 初始值 -2
+        let point = null; // 点
+        // 遍历余下没有走过的点，递归寻找最好的点 —— 对方最差 & 自己最好的点
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            if (checkData[i * 3 + j]) {
+              continue;
+            }
+            const tmp = cloneData(checkData);
+            tmp[i * 3 + j] = checkCurrent;
+            // 计算对方的最好结果
+            const r = bestChoice(tmp, 3 - checkCurrent).result;
+            // console.log(tmp, r);
+            // 对方最好的结果等于对自己最差的结果;反之亦然
+            if (-r > result) {
+              result = -r;
+              point = { i, j };
+            }
+          }
+        }
+        // 没有找到，则和局
+        return {
+          point,
+          result: point ? result : 0,
+        };
+      }
+    </script>
+  </body>
+</html>
