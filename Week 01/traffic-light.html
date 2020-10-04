@@ -148,18 +148,61 @@
 
       // goPromise();
 
-      // 代码4 基于代码3 的 async 改造
+      function manualLight(element, eventName) {
+        return new Promise((resolve, reject) => {
+          // 点击后触发 resolve
+          element.addEventListener(eventName, resolve, { once: true });
+        });
+      }
+
+      // 代码4 基于代码3 的 async 改造 + 手动触发
       async function goAsyncV2() {
         while (true) {
           lightOn("green");
           await sleep(3000);
           lightOn("yellow");
-          await sleep(2000);
+          await manualLight(document.getElementById("red"), "click");
           lightOn("red");
           await sleep(1000);
         }
       }
       goAsyncV2();
+
+      // 代码5 generator
+      function* goGenerator() {
+        while (true) {
+          lightOn("green");
+          yield sleep(3000);
+          lightOn("yellow");
+          yield sleep(3000);
+          // yield manualLight(document.getElementById("red"), "click");
+          lightOn("red");
+          yield sleep(1000);
+        }
+      }
+
+      function run(iterator) {
+        let { value, done } = iterator.next();
+        console.log(iterator);
+        if (done) {
+          return;
+        }
+        if (value instanceof Promise) {
+          value.then(() => {
+            run(iterator);
+          });
+        }
+      }
+
+      function co(generator) {
+        console.log(generator);
+        return function () {
+          return run(generator());
+        };
+      }
+
+      // 执行了无反应
+      // goGenerator = co(goGenerator);
     </script>
   </body>
 </html>
