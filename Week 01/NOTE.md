@@ -48,7 +48,7 @@
   - Promise.all 同时等待多个 promise 执行
   - Race 进行竞争关系
 
-### async / await：基于 Promise 实现异步，在语法上支持和封装，
+### async / await：基于 Promise 实现异步，在语法上支持和封装
 
 - 特点：
   - 本质上纯粹是语法上的改进

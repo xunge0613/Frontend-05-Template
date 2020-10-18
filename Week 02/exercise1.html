@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>练习1 地图编辑器</title>
+    <style>
+      .cell {
+        display: inline-block;
+        border: 1px solid black;
+        width: 9px;
+        height: 9px;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .cell.wall {
+        background: black;
+      }
+      #container {
+        width: 900px;
+        font-size: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <button id="btn-save">保存</button>
+    <button id="btn-clear">清空</button>
+    <script>
+      /**
+       * 地图相关逻辑
+       */
+      const container = document.getElementById("container");
+      let map = localStorage["map"]
+        ? JSON.parse(localStorage["map"])
+        : Array(10000).fill(0);
+      // 先在 dom 外添加 cell，减少 dom 操作次数
+      const wrap = document.createElement("div");
+
+      // 事件初始状态
+      let mousedown = false; //
+      let clear = false; // 是否右键清除地图
+      document.addEventListener("mousedown", (e) => {
+        // 左键绘制 & 右键清除 地图
+        mousedown = true;
+        clear = e.which === 3;
+      });
+      document.addEventListener("mouseup", (e) => {
+        // 释放鼠标后取消绘制 & 清除
+        mousedown = false;
+      });
+
+      for (let i = 0; i < 100; i++) {
+        for (let j = 0; j < 100; j++) {
+          const index = i * 100 + j;
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          // 初始化已保存的地图
+          if (map[index]) {
+            // 使用 className 来记录，方便后续“清空”操作
+            cell.classList.add("wall");
+          }
+          cell.addEventListener("mouseover", () => {
+            if (mousedown) {
+              if (clear) {
+                // 清除
+                cell.classList.remove("wall");
+                map[index] = 0;
+              } else {
+                // 绘制
+                cell.classList.add("wall");
+                map[index] = 1;
+              }
+            }
+          });
+          wrap.appendChild(cell);
+        }
+      }
+      // 将全部 cell 一次性加入 container
+      container.appendChild(wrap);
+
+      // 禁用鼠标右键
+      document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+      });
+
+      // 按钮逻辑
+      // 保存
+      document.getElementById("btn-save").addEventListener("click", () => {
+        localStorage.setItem("map", JSON.stringify(map));
+      });
+      // 清空
+      document.getElementById("btn-clear").addEventListener("click", () => {
+        // 视觉
+        document.querySelectorAll(".wall").forEach((item) => {
+          item.classList.remove("wall");
+        });
+
+        // 逻辑
+        map = Array(10000).fill(0);
+      });
+    </script>
+  </body>
+</html>

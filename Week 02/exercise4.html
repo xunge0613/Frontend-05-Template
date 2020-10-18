@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>练习4 寻找最终路径</title>
+    <style>
+      .cell {
+        display: inline-block;
+        border: 1px solid black;
+        width: 9px;
+        height: 9px;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .cell.wall {
+        background: black;
+      }
+      .cell.visited {
+        background: green;
+      }
+      .cell.path {
+        background: purple;
+      }
+      #container {
+        width: 900px;
+        font-size: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <button id="btn-save">保存</button>
+    <button id="btn-clear">清空</button>
+    <script>
+      // utils
+      function sleep(time) {
+        return new Promise((resolve) => {
+          return setTimeout(() => {
+            resolve();
+          }, time);
+        });
+      }
+    </script>
+    <script>
+      /**
+       * 地图相关逻辑
+       */
+      const container = document.getElementById("container");
+      let map = localStorage["map"]
+        ? JSON.parse(localStorage["map"])
+        : Array(10000).fill(0);
+      // 先在 dom 外添加 cell，减少 dom 操作次数
+      const wrap = document.createElement("div");
+
+      // 事件初始状态
+      let mousedown = false; //
+      let clear = false; // 是否右键清除地图
+      document.addEventListener("mousedown", (e) => {
+        // 左键绘制 & 右键清除 地图
+        mousedown = true;
+        clear = e.which === 3;
+      });
+      document.addEventListener("mouseup", (e) => {
+        // 释放鼠标后取消绘制 & 清除
+        mousedown = false;
+      });
+
+      for (let i = 0; i < 100; i++) {
+        for (let j = 0; j < 100; j++) {
+          const index = i * 100 + j;
+          const cell = document.createElement("div");
+          cell.classList.add("cell");
+          // 初始化已保存的地图
+          if (map[index]) {
+            // 使用 className 来记录，方便后续“清空”操作
+            cell.classList.add("wall");
+          }
+          cell.addEventListener("mouseover", () => {
+            if (mousedown) {
+              if (clear) {
+                // 清除
+                cell.classList.remove("wall");
+                map[index] = 0;
+              } else {
+                // 绘制
+                cell.classList.add("wall");
+                map[index] = 1;
+              }
+            }
+          });
+          wrap.appendChild(cell);
+        }
+      }
+      // 将全部 cell 一次性加入 container
+      container.appendChild(wrap);
+
+      // 禁用鼠标右键
+      document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+      });
+
+      // 按钮逻辑
+      // 保存
+      document.getElementById("btn-save").addEventListener("click", () => {
+        localStorage.setItem("map", JSON.stringify(map));
+      });
+      // 清空
+      document.getElementById("btn-clear").addEventListener("click", () => {
+        // 视觉
+        Array.from(container.children[0].children).forEach((item) => {
+          item.classList = "cell";
+        });
+
+        // 逻辑
+        map = Array(10000).fill(0);
+      });
+      // 思考：需要定量地考量性能，demo 只展示了绘制，或许展示执行次数更有参考价值
+      let visitCount = 0;
+      /*
+       * m 地图
+       * start 起点坐标
+       * end 终点坐标
+       */
+      async function findPath(m, start, end) {
+        // 初始化起点，复制地图
+        const tempMap = Object.create(m);
+        const queue = [start];
+        // 把访问过的点放入队列中
+        async function insert(i, j, pre) {
+          const index = 100 * i + j;
+
+          visitCount++;
+          // 超出边界
+          if (i < 0 || j < 0 || i > 100 || j > 100) {
+            return;
+          }
+          // 已访问过
+          if (tempMap[index]) {
+            return;
+          }
+          // 延迟标记已访问的节点
+          // await sleep(30);
+          container.children[0].children[index].classList.add("visited");
+          // 记录每个节点的前驱节点，最后输出路径用
+          tempMap[index] = pre; //
+          queue.push([i, j]); // 加入队列
+        }
+
+        while (queue.length) {
+          let [i, j] = queue.shift();
+          // console.log([i, j]); 关闭打印，耗时高
+          // 找到路径
+          if (j === end[0] && i === end[1]) {
+            // 从终点开始，返回路径
+            const path = [];
+            while (i !== start[1] || j !== start[0]) {
+              path.push(tempMap[100 * j + i]); // 存入当前点
+              [i, j] = tempMap[100 * j + i]; // 寻找前驱节点
+              await sleep(30);
+              container.children[0].children[100 * j + i].classList.add("path");
+            }
+            return path;
+          }
+          // 广度优先
+          await insert(i - 1, j, [i, j]); // 上
+          await insert(i, j + 1, [i, j]); // 右
+          await insert(i + 1, j, [i, j]); // 下
+          await insert(i, j - 1, [i, j]); // 左
+
+          await insert(i - 1, j - 1, [i, j]); // 左上
+          await insert(i + 1, j + 1, [i, j]); // 右下
+          await insert(i + 1, j - 1, [i, j]); // 右下
+          await insert(i - 1, j + 1, [i, j]); // 左上
+        }
+      }
+
+      findPath(map, [0, 0], [10, 10]);
+      console.log("共访问:", visitCount, "次");
+    </script>
+  </body>
+</html>
