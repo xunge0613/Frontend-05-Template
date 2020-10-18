@@ -50,10 +50,10 @@
         constructor(data, compare) {
           this.data = data.slice();
           this.compare = compare || ((a, b) => a - b);
-          console.log("init", this.data);
+          // console.log("init", this.data);
         }
         take() {
-          console.log("take", this.data);
+          // console.log("take", this.data);
           if (!this.data.length) {
             return;
           }
@@ -159,20 +159,20 @@
        */
       async function findPath(m, start, end) {
         // 初始化起点，复制地图
-        console.log("findPath", m, start, end);
+        // console.log("findPath", m, start, end);
         const tempMap = Object.create(m);
         // const queue = [start];
         const queue = new Sorted([start], (a, b) => distance(a) - distance(b));
-        console.log(queue);
+        // console.log(queue);
         // 通过坐标来计算距离
         function distance(point) {
           // 节约运行，不开根号了
-          console.log(point);
+          // console.log(point);
           return (point[0] - end[0]) ** 2 + (point[1] - end[1]) ** 2;
         }
         // 把访问过的点放入队列中
         async function insert(i, j, pre) {
-          console.log("insert", i, j, pre);
+          // console.log("insert", i, j, pre);
           const index = 100 * i + j;
 
           visitCount++;
@@ -195,7 +195,7 @@
         // 需要调整此处 queue.data.length
         while (queue.data.length) {
           let [i, j] = queue.take();
-          console.log("take", [i, j]); // 关闭打印，耗时高
+          // console.log("take", [i, j]); // 关闭打印，耗时高
           // 找到路径
           if (j === end[0] && i === end[1]) {
             // 从终点开始，返回路径
