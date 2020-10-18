@@ -163,7 +163,7 @@
         const tempMap = Object.create(m);
         // const queue = [start];
         const queue = new Sorted([start], (a, b) => distance(a) - distance(b));
-
+        console.log(queue);
         // 通过坐标来计算距离
         function distance(point) {
           // 节约运行，不开根号了
@@ -192,7 +192,7 @@
           queue.give([i, j]); // 加入队列
         }
 
-        while (queue.length) {
+        while (queue.data.length) {
           let [i, j] = queue.take();
           console.log("take", [i, j]); // 关闭打印，耗时高
           // 找到路径
