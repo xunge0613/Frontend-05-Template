@@ -192,6 +192,7 @@
           queue.give([i, j]); // 加入队列
         }
 
+        // 需要调整此处 queue.data.length
         while (queue.data.length) {
           let [i, j] = queue.take();
           console.log("take", [i, j]); // 关闭打印，耗时高
