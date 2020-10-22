@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>练习1：tokenizer</title>
+  </head>
+  <body>
+    <script>
+      const regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g;
+      const dictionary = [
+        "Number",
+        "Whitespace",
+        "LineTerminator",
+        "*",
+        "/",
+        "+",
+        "-",
+      ];
+
+      function tokenizer(source) {
+        let result = null;
+        // 参考 MDN 的 demo 写了 while 循环执行条件
+        // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
+        while ((result = regexp.exec(source)) !== null) {
+          for (let i = 1; i <= dictionary.length; i++) {
+            // result[0] 是整体匹配，result[1] 开始是各个分支的匹配结果
+            if (result[i]) {
+              console.log(dictionary[i - 1]);
+            }
+          }
+          console.log(result);
+        }
+      }
+
+      tokenizer("1 + 2 - 9");
+    </script>
+  </body>
+</html>
