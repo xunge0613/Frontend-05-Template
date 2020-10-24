@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>练习3：语法分析1</title>
+  </head>
+  <body>
+    <script>
+      const regexp = /([0-9\.]+)|([ \t]+)|([\r\n]+)|(\+)|(\-)|(\*)|(\/)/g;
+      const dictionary = [
+        "Number",
+        "Whitespace",
+        "LineTerminator",
+        "+",
+        "-",
+        "*",
+        "/",
+      ];
+
+      // 返回 generator 以供 for of 遍历
+      function* tokenizer(source) {
+        let result = null;
+        let lastIndex = 0;
+        // 参考 MDN 的 demo 写了 while 循环执行条件
+        // https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec
+        while ((result = regexp.exec(source)) !== null) {
+          // 未识别的字符串
+          if (regexp.lastIndex - lastIndex > result[0].length) {
+            break;
+          }
+
+          lastIndex = regexp.lastIndex;
+          const token = {
+            type: null,
+            value: null,
+          };
+          for (let i = 1; i <= dictionary.length; i++) {
+            // result[0] 是整体匹配，result[1] 开始是各个分支的匹配结果
+            if (result[i]) {
+              token.type = dictionary[i - 1];
+              // console.log(dictionary[i - 1]);
+            }
+          }
+          token.value = result[0];
+          // console.log(token);
+          // while 循环每一次执行都返回一次结果
+          yield token;
+        }
+        yield {
+          type: "EOF",
+        };
+      }
+
+      const source = [];
+      for (const token of tokenizer("10 * 24 / 2")) {
+        if (token.type !== "Whitespace" && token.type !== "LineTerminator") {
+          source.push(token);
+        }
+
+        // console.log(token);
+      }
+
+      // 先编写最靠近终结符的：MultiplicativeExpression
+      function MultiplicativeExpression(source) {
+        console.log(source);
+        let node = null;
+        /**
+         * 三种 token 情况
+         * 1 Number
+         * 2 MultiplicativeExpression *
+         * 3 MultiplicativeExpression /
+         * 其余情况
+         * 1 异常字符
+         * 2 EOF
+         */
+        switch (source[0].type) {
+          case "Number":
+            node = {
+              type: "MultiplicativeExpression",
+              children: [source[0]],
+            };
+            source[0] = node;
+            return MultiplicativeExpression(source);
+          case "MultiplicativeExpression":
+            // 最后情况
+            if (!source[1]) {
+              return source[0];
+            }
+
+            const operator = source[1].type;
+            if (operator !== "*" && operator !== "/") {
+              // 未识别情况
+              return source[0];
+            }
+
+            node = {
+              type: "MultiplicativeExpression",
+              operator,
+              children: [],
+            };
+            // 把前 3 项合成一个新的 MultiplicativeExpression
+            node.children.push(source.shift());
+            node.children.push(source.shift());
+            node.children.push(source.shift());
+            source.unshift(node);
+            return MultiplicativeExpression(source);
+          default:
+            return source[0];
+        }
+      }
+
+      // TBD
+      function AdditiveExpression() {}
+      // TBD
+      function Expression(tokens) {}
+
+      console.log(MultiplicativeExpression(source));
+    </script>
+  </body>
+</html>
