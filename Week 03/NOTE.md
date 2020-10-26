@@ -40,10 +40,10 @@
 - number 0~9, .小数点
 - operator +-\*/
 
-#### 格式化字符：
+#### 格式化字符
 
-- 空格 <SP>
-- 换行 <LF> <CR>
+- 空格 `<SP>`
+- 换行 `<LF> <CR>`
 - 语法定义
 
 图解
@@ -75,10 +75,10 @@
 
 ![](https://api2.mubu.com/v3/document_image/0d314bed-5508-4207-918b-53bd5b14e18e-1434819.jpg)
 
-#### 先看第一个 Symbol 会是什么？
+#### 先看第一个 Symbol 会是什么?
 
-- 情况 1：开头是 <MultiplicativeExporession>
-- 情况 2： <AdditiveExporession> 递归
+- 情况 1：开头是 `<MultiplicativeExporession>`
+- 情况 2： `<AdditiveExporession>` 递归
 
 #### 如果是情况 1，展开乘法表达式
 
@@ -89,12 +89,12 @@
 ##### 步骤
 
 - 情况 a：Number
-- 情况 b：<MultiplicativeExporession>
-- 情况 c：<AdditiveExporession>
+- 情况 b：`<MultiplicativeExporession>`
+- 情况 c：`<AdditiveExporession>`
 
-##### 然后再看第二个输入的元素，是 乘号/除号还是加号、减号因为原来的 <MultiplicativeExporession> 还是在的
+##### 然后再看第二个输入的元素，是 乘号/除号还是加号、减号因为原来的 `<MultiplicativeExporession>` 还是在的
 
-> 因为原来的 <MultiplicativeExporession> 还是在的
+> 因为原来的 `<MultiplicativeExporession>` 还是在的
 
 ## 第二小节
 
@@ -135,166 +135,6 @@
 ### 验证
 
 #### 问题 1：每次打印了一堆信息
-
-图
-
-![](https://api2.mubu.com/v3/document_image/0acc97a0-b1b6-49c7-9a83-2ca046996b93-1434819.jpg)
-
-解决：把下面输出 result 移到 for 循环外
-
-Done
-
-![](https://api2.mubu.com/v3/document_image/6aa37e04-3bb1-4ce3-9a4b-c13d3147f2a1-1434819.jpg)
-
-第三周： 使用 LL 算法构建 AST
-
-本周目标：学习编译原理相关知识，使用 LL 算法 构建 AST 抽象语法树
-
-# 第一小节
-
-## 简介
-
-构建语法树 —— 语法分析
-
-代码第一步：分词
-
-把词构成层层嵌套的树形结构
-
-### 主要算法
-
-LL：从左到右扫描，从左到右规约具体扫描规约到实际代码里去看
-
-> 具体扫描规约到实际代码里去看
-
-LR
-
-## 案例：四则运算的分析
-
-图
-
-![](https://api2.mubu.com/v3/document_image/c272b07f-b163-4c70-8af2-6bb83e769797-1434819.jpg)
-
-### 知识：
-
-词法分析
-
-正则
-
-### 定义
-
-词法定义 （token）
-
-有意义字符：
-
-number 0~9, .小数点
-
-operator +-\*/
-
-格式化字符：
-
-空格 <SP>
-
-换行 <LF> <CR>
-
-语法定义
-
-图解
-
-![](https://api2.mubu.com/v3/document_image/ce0863a5-20cc-4a47-9bb7-94104acf6dfd-1434819.jpg)
-
-蓝色背景：终结符 Terminal Symbol —— 直接从词法里面扫描出来的
-
-EOF 标识了所有源代码的结束
-
-白色背景：非终结符 —— 拿终结符的组合定义出来的
-
-特点
-
-操作符有优先级
-
-JavaScript 部分的产生式来定义运算
-
-做成嵌套结构
-
-加法：
-
-由左右两个乘法构成的（有优先级）
-
-使用递归来重复自身的序列（支持连加）
-
-乘法
-
-单独的数字也认为是一个一项的乘法
-
-### LL 语法分析思路
-
-图
-
-![](https://api2.mubu.com/v3/document_image/0d314bed-5508-4207-918b-53bd5b14e18e-1434819.jpg)
-
-先看第一个 Symbol 会是什么？
-
-情况 1：开头是 <MultiplicativeExporession>
-
-情况 2： <AdditiveExporession> 递归
-
-如果是情况 1，展开乘法表达式
-
-图
-
-![](https://api2.mubu.com/v3/document_image/76fd54f9-d3a5-42bd-9c8f-3d068c663f20-1434819.jpg)
-
-步骤
-
-情况 a：Number
-
-情况 b：<MultiplicativeExporession>
-
-情况 c：<AdditiveExporession>
-
-然后再看第二个输入的元素，是 乘号/除号还是加号、减号因为原来的 <MultiplicativeExporession> 还是在的
-
-> 因为原来的 <MultiplicativeExporession> 还是在的
-
-# 第二小节
-
-## 编码步骤
-
-### 正则表达式
-
-结构
-
-或关系分开
-
-每个里面都有一个圆括号 —— 捕获一旦捕获了，那么除了字符串整体会被匹配，圆括号内捕获 的内容也会被匹配
-
-> 一旦捕获了，那么除了字符串整体会被匹配，圆括号内捕获 的内容也会被匹配
-
-说明：整体匹配的内容每次只会匹配到一个或关系分支里面
-
-### 给正则每个分支起名 token 名
-
-Number[0-9\.]+
-
-> [0-9\.]+
-
-Whitespace[ \t]+
-
-> [ \t]+
-
-LineTerminator[\n\r]+
-
-> [\n\r]+
-
-- - - \\+ \- \* \/
-
-> \+ \- \* \/
-
-tokenize：循环遍历字符串，使用正则匹配进行分词
-
-## 验证：
-
-### 问题 1：每次打印了一堆信息
 
 图
 

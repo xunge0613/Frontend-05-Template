@@ -109,7 +109,6 @@
         }
       }
 
-      // 
       /**
         * AdditiveExpression
         *
@@ -152,7 +151,7 @@
               operator,
               children: [],
             };
-            // 把前 3 项合成一个新的 MultiplicativeExpression
+            // 把前 3 项合成一个新的 AdditiveExpression
             node.children.push(source.shift());
             node.children.push(source.shift());
             MultiplicativeExpression(source);
