@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2. KMP</title>
+  </head>
+  <body>
+    <script>
+      function kmp(source, pattern) {
+        // 第一步，计算 table
+        const table = new Array(pattern.length).fill(0);
+        {
+          // 考虑字符串开始的位置
+          let i = 1,
+            j = 0; // i = 0  表示整串
+
+          while (i < pattern.length) {
+            // i j 相等，说明有自重复
+            if (pattern[i] === pattern[j]) {
+              ++i, ++j;
+              table[i] = j;
+            } else {
+              // 不匹配
+              if (j > 0) {
+                j = table[j];
+              } else {
+                // table[i] = 0; 不需要
+                ++i;
+              }
+
+              // aabaaac
+            }
+          }
+          // test
+          console.log(table);
+        }
+
+        // 匹配
+        {
+          //匹配模块
+          let i = 0; // source
+          let j = 0; // pattern
+          while (i < source.length) {
+            if (source[i] === pattern[j]) {
+              ++i, ++j; // 判断下一个字符
+            } else {
+              if (j > 0) {
+                // 判断前缀中是否有相同
+                j = table[j];
+              } else {
+                ++i; // i 移动到下一位
+              }
+            }
+            if (j === pattern.length) {
+              // pattern 匹配到最后一个，找到了字符串
+              return true;
+            }
+          }
+          return false; // source 匹配完，表示没有找到 pattern 字符串
+        }
+      }
+
+      kmp("", "aabaaac");
+    </script>
+  </body>
+</html>
