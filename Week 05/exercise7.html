@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>7. 拖拽</title>
+  </head>
+  <body>
+    <div
+      id="dragable"
+      style="
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        background: black;
+      "
+    ></div>
+    <script>
+      // 每次拖拽结束后的位置
+      let baseX = 0;
+      let baseY = 0;
+
+      const dragable = document.getElementById("dragable");
+
+      // 鼠标按下开始拖动
+      dragable.addEventListener("mousedown", function (event) {
+        // console.log(event);
+
+        // 每次拖拽开始时的位置
+        let startX = event.clientX;
+        let startY = event.clientY;
+
+        // 结束拖动，重置事件和初始状态
+        const up = (event) => {
+          baseX = baseX + event.clientX - startX;
+          baseY = baseY + event.clientY - startY;
+          document.removeEventListener("mouseup", up);
+          document.removeEventListener("mousemove", move);
+        };
+
+        // 继续拖动
+        const move = (event) => {
+          // 根据 event.clientX event.clientY 获取鼠标位置
+          // 使用 transform 移动
+          dragable.style.transform = `translate(${
+            baseX + event.clientX - startX
+          }px, ${baseY + event.clientY - startY}px)`;
+        };
+
+        document.addEventListener("mousemove", move);
+        document.addEventListener("mouseup", up);
+      });
+    </script>
+  </body>
+</html>

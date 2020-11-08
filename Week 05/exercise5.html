@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>5. 兼容级联 po.a.b</title>
+  </head>
+  <body>
+    <script>
+      // 把 obj 作为 key 来找到对应的 reactivity
+      const callbacks = new Map();
+
+      // 使用全局表格来记录
+      const reactivities = new Map();
+
+      let usedReactivities = [];
+
+      let object = {
+        a: {
+          b: 2,
+        },
+        b: 1,
+      };
+
+      let po = reactive(object);
+
+      function effect(callback) {
+        // callbacks.push(callback);
+        usedReactivities = [];
+        callback();
+        for (const reactivity of usedReactivities) {
+          // 排除空的情况
+          if (!callbacks.has(reactivity[0])) {
+            callbacks.set(reactivity[0], new Map());
+          }
+
+          if (!callbacks.get(reactivity[0]).has(reactivity[1])) {
+            callbacks.get(reactivity[0]).set(reactivity[1], []);
+          }
+
+          callbacks.get(reactivity[0]).get(reactivity[1]).push(callback);
+        }
+      }
+
+      // 实际上是无状态组件，可以进行缓存
+      function reactive(object) {
+        if (reactivities.has(object)) {
+          return reactivities.get(object);
+        }
+        return new Proxy(object, {
+          // set
+          set(obj, prop, val) {
+            obj[prop] = val;
+            console.log(obj, prop, val);
+            if (callbacks.get(obj)) {
+              if (callbacks.get(obj).get(prop)) {
+                for (const callback of callbacks.get(obj).get(prop)) {
+                  callback();
+                }
+              }
+            }
+
+            return obj[prop];
+          },
+          get(obj, prop) {
+            console.log(obj, prop);
+            // 了解调用哪些变量
+            usedReactivities.push([obj, prop]);
+            if (typeof obj[prop] === "object") {
+              return reactive(obj[prop]);
+            }
+            return obj[prop];
+          },
+        });
+      }
+
+      // test
+      effect(() => {
+        console.log(po.a);
+      });
+
+      po.x = 2;
+    </script>
+  </body>
+</html>
