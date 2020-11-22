@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Realms</title>
+    <style>
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      html,
+      body {
+        overflow: hidden;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mountNode"></div>
+    <script>
+      /*Fixing iframe window.innerHeight 0 issue in Safari*/ document.body
+        .clientHeight;
+    </script>
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g6-3.1.1/build/g6.js"></script>
+    <script src="https://gw.alipayobjects.com/os/antv/assets/lib/jquery-3.2.1.min.js"></script>
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.hierarchy-0.5.0/build/hierarchy.js"></script>
+    <script>
+      let data = {
+        id: "Realms",
+        children: [
+          {
+            id: "Value properties",
+            children: [
+              { id: "Infinity" },
+              { id: "NaN" },
+              { id: "undefined" },
+              { id: "globalThis" },
+            ],
+          },
+          {
+            id: "Function properties",
+            children: [
+              { id: "eval()" },
+              { id: "uneval()" },
+              { id: "isFinite()" },
+              { id: "isNaN()" },
+              { id: "parseFloat()" },
+              { id: "parseInt()" },
+              { id: "decodeURI()" },
+              { id: "decodeURIComponent()" },
+              { id: "encodeURI()" },
+              { id: "encodeURIComponent()" },
+            ],
+          },
+          {
+            id: "Fundamental objects",
+            children: [
+              { id: "Object" },
+              { id: "Function" },
+              { id: "Boolean" },
+              { id: "Symbol" },
+              {
+                id: "Error objects",
+                children: [
+                  { id: "Error" },
+                  { id: "AggregateError" },
+                  { id: "EvalError" },
+                  { id: "InternalError" },
+                  { id: "RangeError" },
+                  { id: "ReferenceError" },
+                  { id: "SyntaxError" },
+                  { id: "TypeError" },
+                  { id: "URIError" },
+                ],
+              },
+            ],
+          },
+          {
+            id: "Numbers and dates",
+            children: [
+              { id: "Number" },
+              { id: "BigInt" },
+              { id: "Math" },
+              { id: "Date" },
+            ],
+          },
+          {
+            id: "Text processing",
+            children: [{ id: "String" }, { id: "RegExp" }],
+          },
+          {
+            id: "Indexed collections",
+            children: [
+              { id: "Array" },
+              { id: "Int8Array" },
+              { id: "Uint8Array" },
+              { id: "Uint8ClampedArray" },
+              { id: "Int16Array" },
+              { id: "Uint16Array" },
+              { id: "Int32Array" },
+              { id: "Uint32Array" },
+              { id: "Float32Array" },
+              { id: "Float64Array" },
+              { id: "BigInt64Array" },
+              { id: "BigUint64Array" },
+            ],
+          },
+          {
+            id: "Keyed collections",
+            children: [
+              { id: "Map" },
+              { id: "Set" },
+              { id: "WeakMap" },
+              { id: "WeakSet" },
+            ],
+          },
+          {
+            id: "Structured data",
+            children: [
+              { id: "ArrayBuffer" },
+              { id: "SharedArrayBuffer" },
+              { id: "Atomics" },
+              { id: "DataView" },
+              { id: "JSON" },
+            ],
+          },
+          {
+            id: "Control abstraction objects",
+            children: [
+              { id: "Promise" },
+              { id: "Generator" },
+              { id: "GeneratorFunction" },
+              { id: "AsyncFunction" },
+            ],
+          },
+          {
+            id: "Reflection",
+            children: [{ id: "Reflect" }, { id: "Proxy" }],
+          },
+          {
+            id: "Internationalization",
+            children: [
+              { id: "Intl" },
+              { id: "Intl.Collator" },
+              { id: "Intl.DateTimeFormat" },
+              { id: "Intl.ListFormat" },
+              { id: "Intl.NumberFormat" },
+              { id: "Intl.PluralRules" },
+              { id: "Intl.RelativeTimeFormat" },
+              { id: "Intl.Locale" },
+            ],
+          },
+          {
+            id: "WebAssembly",
+            children: [
+              { id: "WebAssembly" },
+              { id: "WebAssembly.Module" },
+              { id: "WebAssembly.Instance" },
+              { id: "WebAssembly.Memory" },
+              { id: "WebAssembly.Table" },
+              { id: "WebAssembly.CompileError" },
+              { id: "WebAssembly.LinkError" },
+              { id: "WebAssembly.RuntimeError" },
+            ],
+          },
+          {
+            id: "Other",
+            children: [{ id: "arguments" }],
+          },
+        ],
+      };
+      var graph = new G6.TreeGraph({
+        container: "mountNode",
+        width: window.innerWidth,
+        height: window.innerHeight,
+        pixelRatio: 2,
+        linkCenter: true,
+        modes: {
+          default: [
+            {
+              type: "collapse-expand",
+              onChange: function onChange(item, collapsed) {
+                var data = item.get("model").data;
+                data.collapsed = collapsed;
+                return true;
+              },
+            },
+            "drag-canvas",
+            "zoom-canvas",
+          ],
+        },
+        defaultNode: {
+          size: 16,
+          style: {
+            fill: "#40a9ff",
+            stroke: "#096dd9",
+          },
+        },
+        defaultEdge: {
+          style: {
+            stroke: "#A3B1BF",
+          },
+        },
+        layout: function layout(data) {
+          var result = Hierarchy.dendrogram(data, {
+            direction: "LR", // H / V / LR / RL / TB / BT
+            nodeSep: 20,
+            rankSep: 100,
+          });
+          G6.Util.radialLayout(result);
+          return result;
+        },
+      });
+      graph.node(function (node) {
+        return {
+          size: 26,
+          style: {
+            fill: "#40a9ff",
+            stroke: "#096dd9",
+          },
+          label: node.id,
+        };
+      });
+      graph.data(data);
+      graph.render();
+      graph.fitView();
+    </script>
+  </body>
+</html>
