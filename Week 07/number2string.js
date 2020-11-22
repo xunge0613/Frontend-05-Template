@@ -18,3 +18,6 @@
 
   return sign + str;
 }
+
+console.log(number2string(-1314.520, 10));
+console.log(number2string(1314, 8));
