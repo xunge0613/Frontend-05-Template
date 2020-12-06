@@ -51,12 +51,12 @@ parser 接受 HTML 文本作为参数，返回一棵 DOM 树
 function tagName(c) {
   switch (c) {
     // <div
-    case /^[a-zA-Z]$/:
+    case (c.match(/^[a-zA-Z]$/) || {}).input:
       currentToken.tagName += c.toLowerCase();
       // 不用回退当前字符，不带 c
       return tagName;
     // \s 空格、tab 、换页 -> <div\s 属性名
-    case /^[ \t\n\f]$/:
+    case (c.match(/^[ \t\n\f]$/) || {}).input:
       return beforeAttributeName;
     // / -> <img/ 自封闭标签
     case "/":
@@ -78,6 +78,8 @@ function tagName(c) {
 
 状态机中，以上实现了状态迁移，还需要实现业务逻辑 —— 在标签结束状态 emit
 
+###
+
 ### 构建 DOM 树
 
 使用栈来构建 DOM 树，从而实现标签的嵌套，开标签入栈，闭标签出栈，自封闭标签不用入栈直接存入节点
@@ -90,4 +92,8 @@ function tagName(c) {
 
 ## 笔记
 
-一个黑科技：switch case 来正则匹配标签时，
+一个黑科技：参考 https://stackoverflow.com/questions/2896626/switch-statement-for-string-matching-in-javascript 可以实现 switch case 来正则匹配标签
+
+```javascript
+case
+```
