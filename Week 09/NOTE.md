@@ -95,7 +95,7 @@ function tagName(c) {
 
 ## 笔记
 
-一个黑科技：参考 https://stackoverflow.com/questions/2896626/switch-statement-for-string-matching-in-javascript 可以实现 switch case 来正则匹配标签
+一个黑科技：参考 https://stackoverflow.com/questions/2896626/switch-statement-for-string-matching-in-javascript 可以实现 z 在 switch case 中匹配正则
 
 ```javascript
   case (c.match(/^[a-zA-Z]$/) || {}).input:
