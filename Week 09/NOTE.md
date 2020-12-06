@@ -78,7 +78,9 @@ function tagName(c) {
 
 状态机中，以上实现了状态迁移，还需要实现业务逻辑 —— 在标签结束状态 emit
 
-###
+### 属性添加
+
+和处理标签类似，有单引号、双引号、无引号三种写法
 
 ### 构建 DOM 树
 
@@ -86,6 +88,7 @@ function tagName(c) {
 
 ## CSS 计算
 
+- 先收集 css 规则（`<style>`标签）
 - 实现了三种基本选择器，#id .class 和 tag，来匹配元素
 - 匹配到元素后，就应用上属性，添加到 computedStyle 中
 - 使用四元组计算 specificity，按后来优先原则覆盖
