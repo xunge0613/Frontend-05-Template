@@ -379,8 +379,13 @@
   // SVG https://www.w3.org/TR/SVG11/linking.html#InterfaceSVGAElement
   names = names.filter((n) => !n.includes("SVG"));
 
-  // XMLHTTP https://xhr.spec.whatwg.org/
+  // XMLHttp
+  // https://xhr.spec.whatwg.org/
   names = names.filter((n) => !n.includes("XMLHttp"));
+
+  // Storage
+  // https://storage.spec.whatwg.org/
+  names = filterOut(names, ["NavigatorStorage", "StorageManager"]);
 
   console.log(names.length);
 </script>
