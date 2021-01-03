@@ -1,5 +1,9 @@
 # 学习笔记
 
+## HTML 标签
+
+手写一个页面来教别人 HTML 的语义性这个方式挺好的
+
 ## 作业：整理 API
 
 归类：http://spec.whatwg.org/
