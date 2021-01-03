@@ -379,13 +379,48 @@
   // SVG https://www.w3.org/TR/SVG11/linking.html#InterfaceSVGAElement
   names = names.filter((n) => !n.includes("SVG"));
 
-  // XMLHttp
   // https://xhr.spec.whatwg.org/
+  // XMLHttp
   names = names.filter((n) => !n.includes("XMLHttp"));
+  // FormData
+  names = filterOut(names, ["FormData"]);
+  // ProgressEvent
+  names = filterOut(names, ["ProgressEvent", "ProgressEventInit"]);
 
   // Storage
   // https://storage.spec.whatwg.org/
   names = filterOut(names, ["NavigatorStorage", "StorageManager"]);
 
+  // URL
+  // https://url.spec.whatwg.org/
+  names = filterOut(names, ["URL", "URLSearchParams"]);
+
+  // Performance
+  // https://developer.mozilla.org/en-US/docs/Web/API/Performance_API
+  names = names.filter((n) => !n.includes("Performance"));
+
+  // WebRTC
+  // https://w3c.github.io/webrtc-pc/#dom-rtcansweroptions
+  names = names.filter((n) => !n.includes("RTC"));
+
+  // Geolocation
+  // https://w3c.github.io/geolocation-api/#geolocation_interface
+  names = names.filter((n) => !n.includes("Geolocation"));
+
+  // Gamepad
+  // https://w3c.github.io/gamepad/#gamepad-interface
+  names = names.filter((n) => !n.includes("Gamepad"));
+
+  // IDB
+  // https://www.w3.org/TR/IndexedDB
+  names = names.filter((n) => !n.includes("IDB"));
+
+  // Media Stream
+  // https://w3c.github.io/mediacapture-main/
+  names = names.filter((n) => !n.includes("MediaStream"));
+
+  // Fetch
+  // https://fetch.spec.whatwg.org/
+  names = filterOut(names, ["Body", "Headers", "Request", "Response", "fetch"]);
   console.log(names.length);
 </script>
