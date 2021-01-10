@@ -1,30 +1,63 @@
-import { Component, createElement } from "./framework";
+import { Component, createElement } from './framework'
 
 class Carousel extends Component {
   constructor() {
-    super(); 
-    this.attributes = Object.create(null);
+    super();
+    this.attributes = Object.create(null)
   }
-
   setAttribute(name, value) {
-    this.attributes[name] = value;
+    this.attributes[name] = value
+  }
+  render() {
+    const { src } = this.attributes;
+    this.root = document.createElement("div")
+    this.root.classList.add('carousel')
+    for (let record of src) {
+      const child = document.createElement("div")
+      child.style.backgroundImage = `url('${record}')`
+      this.root.appendChild(child)
+    }
+
+    let position = 0
+
+    this.root.addEventListener("mousedown", event => { 
+      let startX = event.clientX
+      //  startY = event.clientY
+      let children = this.root.children
+      let move = event => {
+        let x = event.clientX - startX
+        let current = position - ((x - x % 500) / 500)
+        for (let offset of [-2, -1, 0, 1, 2]) {
+          let pos = current + offset
+          pos = ( pos + children.length ) % children.length
+          
+          children[pos].style.transition = "none"
+          children[pos].style.transform = `translateX(${- pos * 500 + offset * 500 + x % 500}px)`
+        }
+      }
+
+      let up = event => {
+        let x = event.clientX - startX
+        position = position - Math.round(x / 500)
+        for (let offset of [0, -Math.sign(Math.round(x / 500) - x + 250 * Math.sign(x))]) {
+          let pos = position + offset
+          pos = ( pos + children.length ) % children.length
+          
+          children[pos].style.transition = "none"
+          children[pos].style.transform = `translateX(${- pos * 500 + offset * 500}px)`
+        }
+        document.removeEventListener("mousemove", move)
+        document.removeEventListener("mouseup", up)
+      }
+      document.addEventListener("mousemove", move)
+      document.addEventListener("mouseup", up)
+    })
+
+    return this.root
   }
 
   mountTo(parent) {
-    // 保证 render 的时机是在取得 src 之后
-    parent.appendChild(this.render());
-  }
-
-  render() {
-    const { src } = this.attributes;
-    this.root = document.createElement("div");
-     this.root.classList.add('carousel');
-    (src || []).forEach(item => {
-      const child = document.createElement("img");
-      child.src = item;
-      this.root.appendChild(child)
-    });
-    return this.root;
+    parent.appendChild(this.render())
   }
 }
 
