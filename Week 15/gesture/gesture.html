@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" oncontextmenu="event.preventDefault()">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestrue</title>
+  </head>
+  <body></body>
+  <script type="module">
+    import { EnableGestrue } from "./gesture.js";
+    EnableGestrue(document.documentElement);
+    document.documentElement.addEventListener("tap", () => {
+      console.log("tap trriger event!");
+    });
+    document.documentElement.addEventListener("flick", () => {
+      console.log("flick trriger event!");
+    });
+    document.documentElement.addEventListener("press-start", () => {
+      console.log("press-start trriger event!");
+    });
+    document.documentElement.addEventListener("press-end", () => {
+      console.log("press-end trriger event!");
+    });
+    document.documentElement.addEventListener("pan-start", () => {
+      console.log("pan-start trriger event!");
+    });
+    document.documentElement.addEventListener("pan", () => {
+      console.log("pan trriger event!");
+    });
+    document.documentElement.addEventListener("pan-end", () => {
+      console.log("pan-end trriger event!");
+    });
+  </script>
+</html>
