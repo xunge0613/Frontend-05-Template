@@ -5,5 +5,10 @@
   "license": "MIT",
   "dependencies": {
     "yeoman-generator": "^4.13.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11"
   }
 }
